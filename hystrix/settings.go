@@ -26,6 +26,7 @@ type Settings struct {
 	RequestVolumeThreshold uint64
 	SleepWindow            time.Duration
 	ErrorPercentThreshold  int
+	IsAlerting             bool
 	AlertFunc              func(name string, isOpen bool)
 }
 
@@ -36,7 +37,7 @@ type CommandConfig struct {
 	RequestVolumeThreshold int `json:"request_volume_threshold"`
 	SleepWindow            int `json:"sleep_window"`
 	ErrorPercentThreshold  int `json:"error_percent_threshold"`
-	AlertFunc               func(name string, isOpen bool)
+	AlertFunc              func(name string, isOpen bool)
 }
 
 var circuitSettings map[string]*Settings
