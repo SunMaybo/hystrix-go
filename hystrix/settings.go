@@ -27,7 +27,7 @@ type Settings struct {
 	SleepWindow            time.Duration
 	ErrorPercentThreshold  int
 	IsAlerting             bool
-	RequestWindowsTime      int64
+	RequestWindowsTime     int64
 	AlertFunc              func(name string, isOpen bool)
 }
 
@@ -37,6 +37,7 @@ type CommandConfig struct {
 	MaxConcurrentRequests  int `json:"max_concurrent_requests"`
 	RequestVolumeThreshold int `json:"request_volume_threshold"`
 	SleepWindow            int `json:"sleep_window"`
+	RequestWindowsTime     int64
 	ErrorPercentThreshold  int `json:"error_percent_threshold"`
 	AlertFunc              func(name string, isOpen bool)
 }
@@ -95,6 +96,7 @@ func ConfigureCommand(name string, config CommandConfig) {
 		SleepWindow:            time.Duration(sleep) * time.Millisecond,
 		ErrorPercentThreshold:  errorPercent,
 		AlertFunc:              config.AlertFunc,
+		RequestWindowsTime:     config.RequestWindowsTime,
 	}
 }
 
