@@ -197,8 +197,9 @@ func (circuit *CircuitBreaker) ReportEvent(eventTypes []string, start time.Time,
 		getSettings(circuit.Name).IsAlerting = true
 		circuit.alertFunc(circuit.Name, isOpen)
 	}
-	if !isOpen {
+	if !isOpen && circuit.alertFunc != nil && getSettings(circuit.Name).IsAlerting {
 		getSettings(circuit.Name).IsAlerting = false
+		circuit.alertFunc(circuit.Name, isOpen)
 	}
 	return nil
 }
