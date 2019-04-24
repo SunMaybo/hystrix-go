@@ -26,7 +26,6 @@ func (e CircuitError) Error() string {
 // used to describe the pairing of your run/fallback functions with a circuit.
 type command struct {
 	sync.Mutex
-
 	ticket      *struct{}
 	start       time.Time
 	errChan     chan error
@@ -77,6 +76,7 @@ func GoC(ctx context.Context, name string, run runFuncC, fallback fallbackFuncC)
 		start:    time.Now(),
 		errChan:  make(chan error, 1),
 		finished: make(chan bool, 1),
+
 	}
 
 	// dont have methods with explicit params and returns

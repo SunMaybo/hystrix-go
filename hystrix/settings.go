@@ -26,6 +26,7 @@ type Settings struct {
 	RequestVolumeThreshold uint64
 	SleepWindow            time.Duration
 	ErrorPercentThreshold  int
+	AlertFunc              func(name string, isOpen bool)
 }
 
 // CommandConfig is used to tune circuit settings at runtime
@@ -35,6 +36,7 @@ type CommandConfig struct {
 	RequestVolumeThreshold int `json:"request_volume_threshold"`
 	SleepWindow            int `json:"sleep_window"`
 	ErrorPercentThreshold  int `json:"error_percent_threshold"`
+	AlertFunc              func()
 }
 
 var circuitSettings map[string]*Settings
@@ -90,6 +92,7 @@ func ConfigureCommand(name string, config CommandConfig) {
 		RequestVolumeThreshold: uint64(volume),
 		SleepWindow:            time.Duration(sleep) * time.Millisecond,
 		ErrorPercentThreshold:  errorPercent,
+		AlertFunc:              config.AlertFunc,
 	}
 }
 

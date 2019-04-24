@@ -15,9 +15,9 @@ type CircuitBreaker struct {
 	forceOpen              bool
 	mutex                  *sync.RWMutex
 	openedOrLastTestedTime int64
-
-	executorPool *executorPool
-	metrics      *metricExchange
+	alertFunc              func(command string, isOpen bool)
+	executorPool           *executorPool
+	metrics                *metricExchange
 }
 
 var (
@@ -71,6 +71,7 @@ func newCircuitBreaker(name string) *CircuitBreaker {
 	c.metrics = newMetricExchange(name)
 	c.executorPool = newExecutorPool(name)
 	c.mutex = &sync.RWMutex{}
+	c.alertFunc=getSettings(name).AlertFunc
 
 	return c
 }
@@ -191,6 +192,10 @@ func (circuit *CircuitBreaker) ReportEvent(eventTypes []string, start time.Time,
 	default:
 		return CircuitError{Message: fmt.Sprintf("metrics channel (%v) is at capacity", circuit.Name)}
 	}
-
+	if circuit.IsOpen()&&circuit.alertFunc!=nil {
+		circuit.alertFunc(circuit.Name, true)
+	} else if circuit.alertFunc!=nil {
+		circuit.alertFunc(circuit.Name, false)
+	}
 	return nil
 }
