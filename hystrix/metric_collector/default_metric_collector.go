@@ -30,12 +30,16 @@ type DefaultMetricCollector struct {
 	fallbackFailures  *rolling.Number
 	totalDuration     *rolling.Timing
 	runDuration       *rolling.Timing
+	RollTime          int64
 }
 
 func newDefaultMetricCollector(name string) MetricCollector {
 	m := &DefaultMetricCollector{}
 	m.mutex = &sync.RWMutex{}
-	m.Reset()
+	if m.RollTime == 0 {
+		m.RollTime = 10
+	}
+	m.Reset(m.RollTime)
 	return m
 }
 
@@ -149,21 +153,22 @@ func (d *DefaultMetricCollector) Update(r MetricResult) {
 }
 
 // Reset resets all metrics in this collector to 0.
-func (d *DefaultMetricCollector) Reset() {
+func (d *DefaultMetricCollector) Reset(rollTime int64) {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 
-	d.numRequests = rolling.NewNumber()
-	d.errors = rolling.NewNumber()
-	d.successes = rolling.NewNumber()
-	d.rejects = rolling.NewNumber()
-	d.shortCircuits = rolling.NewNumber()
-	d.failures = rolling.NewNumber()
-	d.timeouts = rolling.NewNumber()
-	d.fallbackSuccesses = rolling.NewNumber()
-	d.fallbackFailures = rolling.NewNumber()
-	d.contextCanceled = rolling.NewNumber()
-	d.contextDeadlineExceeded = rolling.NewNumber()
+	d.numRequests = rolling.NewNumber(rollTime)
+	d.errors = rolling.NewNumber(rollTime)
+	d.successes = rolling.NewNumber(rollTime)
+	d.rejects = rolling.NewNumber(rollTime)
+	d.shortCircuits = rolling.NewNumber(rollTime)
+	d.failures = rolling.NewNumber(rollTime)
+	d.timeouts = rolling.NewNumber(rollTime)
+	d.fallbackSuccesses = rolling.NewNumber(rollTime)
+	d.fallbackFailures = rolling.NewNumber(rollTime)
+	d.contextCanceled = rolling.NewNumber(rollTime)
+	d.contextDeadlineExceeded = rolling.NewNumber(rollTime)
 	d.totalDuration = rolling.NewTiming()
 	d.runDuration = rolling.NewTiming()
+	d.RollTime = rollTime
 }

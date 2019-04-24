@@ -58,8 +58,8 @@ func Flush() {
 	defer circuitBreakersMutex.Unlock()
 
 	for name, cb := range circuitBreakers {
-		cb.metrics.Reset()
-		cb.executorPool.Metrics.Reset()
+		cb.metrics.Reset(getSettings(name).RequestWindowsTime)
+		cb.executorPool.Metrics.Reset(getSettings(name).RequestWindowsTime)
 		delete(circuitBreakers, name)
 	}
 }
@@ -161,7 +161,7 @@ func (circuit *CircuitBreaker) setClose() {
 	log.Printf("hystrix-go: closing circuit %v", circuit.Name)
 
 	circuit.open = false
-	circuit.metrics.Reset()
+	circuit.metrics.Reset(getSettings(circuit.Name).RequestWindowsTime)
 }
 
 // ReportEvent records command metrics for tracking recent error rates and exposing data to the dashboard.

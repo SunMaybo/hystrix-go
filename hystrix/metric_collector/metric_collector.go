@@ -11,6 +11,7 @@ var Registry = metricCollectorRegistry{
 	lock: &sync.RWMutex{},
 	registry: []func(name string) MetricCollector{
 		newDefaultMetricCollector,
+
 	},
 }
 
@@ -63,5 +64,5 @@ type MetricCollector interface {
 	// Update accepts a set of metrics from a command execution for remote instrumentation
 	Update(MetricResult)
 	// Reset resets the internal counters and timers.
-	Reset()
+	Reset(rollTime int64)
 }

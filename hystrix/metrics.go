@@ -30,7 +30,7 @@ func newMetricExchange(name string) *metricExchange {
 	m.Updates = make(chan *commandExecution, 2000)
 	m.Mutex = &sync.RWMutex{}
 	m.metricCollectors = metricCollector.Registry.InitializeMetricCollectors(name)
-	m.Reset()
+	m.Reset(getSettings(name).RequestWindowsTime)
 
 	go m.Monitor()
 
@@ -111,12 +111,12 @@ func (m *metricExchange) IncrementMetrics(wg *sync.WaitGroup, collector metricCo
 	wg.Done()
 }
 
-func (m *metricExchange) Reset() {
+func (m *metricExchange) Reset(rollTime int64) {
 	m.Mutex.Lock()
 	defer m.Mutex.Unlock()
 
 	for _, collector := range m.metricCollectors {
-		collector.Reset()
+		collector.Reset(rollTime)
 	}
 }
 

@@ -27,6 +27,7 @@ type Settings struct {
 	SleepWindow            time.Duration
 	ErrorPercentThreshold  int
 	IsAlerting             bool
+	RequestWindowsTime      int64
 	AlertFunc              func(name string, isOpen bool)
 }
 

@@ -24,20 +24,19 @@ func newPoolMetrics(name string) *poolMetrics {
 	m.Name = name
 	m.Updates = make(chan poolMetricsUpdate)
 	m.Mutex = &sync.RWMutex{}
-
-	m.Reset()
+	m.Reset(getSettings(name).RequestWindowsTime)
 
 	go m.Monitor()
 
 	return m
 }
 
-func (m *poolMetrics) Reset() {
+func (m *poolMetrics) Reset(rollTime int64) {
 	m.Mutex.Lock()
 	defer m.Mutex.Unlock()
 
-	m.MaxActiveRequests = rolling.NewNumber()
-	m.Executed = rolling.NewNumber()
+	m.MaxActiveRequests = rolling.NewNumber(rollTime)
+	m.Executed = rolling.NewNumber(rollTime)
 }
 
 func (m *poolMetrics) Monitor() {

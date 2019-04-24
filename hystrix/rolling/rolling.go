@@ -8,8 +8,9 @@ import (
 // Number tracks a numberBucket over a bounded number of
 // time buckets. Currently the buckets are one second long and only the last 10 seconds are kept.
 type Number struct {
-	Buckets map[int64]*numberBucket
-	Mutex   *sync.RWMutex
+	Buckets  map[int64]*numberBucket
+	Mutex    *sync.RWMutex
+	RollTime int64
 }
 
 type numberBucket struct {
@@ -17,10 +18,11 @@ type numberBucket struct {
 }
 
 // NewNumber initializes a RollingNumber struct.
-func NewNumber() *Number {
+func NewNumber(rollTime int64) *Number {
 	r := &Number{
-		Buckets: make(map[int64]*numberBucket),
-		Mutex:   &sync.RWMutex{},
+		Buckets:  make(map[int64]*numberBucket),
+		Mutex:    &sync.RWMutex{},
+		RollTime: rollTime,
 	}
 	return r
 }
@@ -39,7 +41,7 @@ func (r *Number) getCurrentBucket() *numberBucket {
 }
 
 func (r *Number) removeOldBuckets() {
-	now := time.Now().Unix() - 10
+	now := time.Now().Unix() - r.RollTime
 
 	for timestamp := range r.Buckets {
 		// TODO: configurable rolling window
@@ -84,7 +86,7 @@ func (r *Number) Sum(now time.Time) float64 {
 
 	for timestamp, bucket := range r.Buckets {
 		// TODO: configurable rolling window
-		if timestamp >= now.Unix()-10 {
+		if timestamp >= now.Unix()-r.RollTime {
 			sum += bucket.Value
 		}
 	}
@@ -101,7 +103,7 @@ func (r *Number) Max(now time.Time) float64 {
 
 	for timestamp, bucket := range r.Buckets {
 		// TODO: configurable rolling window
-		if timestamp >= now.Unix()-10 {
+		if timestamp >= now.Unix()-r.RollTime {
 			if bucket.Value > max {
 				max = bucket.Value
 			}
@@ -112,5 +114,5 @@ func (r *Number) Max(now time.Time) float64 {
 }
 
 func (r *Number) Avg(now time.Time) float64 {
-	return r.Sum(now) / 10
+	return r.Sum(now) / float64(r.RollTime)
 }
