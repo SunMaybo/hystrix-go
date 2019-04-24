@@ -193,7 +193,7 @@ func (circuit *CircuitBreaker) ReportEvent(eventTypes []string, start time.Time,
 		return CircuitError{Message: fmt.Sprintf("metrics channel (%v) is at capacity", circuit.Name)}
 	}
 	isOpen := circuit.IsOpen()
-	if isOpen && circuit.alertFunc != nil && getSettings(circuit.Name).IsAlerting {
+	if isOpen && circuit.alertFunc != nil && !getSettings(circuit.Name).IsAlerting {
 		getSettings(circuit.Name).IsAlerting = true
 		circuit.alertFunc(circuit.Name, isOpen)
 	}
