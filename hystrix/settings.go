@@ -3,6 +3,7 @@ package hystrix
 import (
 	"sync"
 	"time"
+	"fmt"
 )
 
 var (
@@ -73,7 +74,6 @@ func ConfigureCommand(name string, config CommandConfig) {
 	if config.MaxConcurrentRequests != 0 {
 		max = config.MaxConcurrentRequests
 	}
-
 	volume := DefaultVolumeThreshold
 	if config.RequestVolumeThreshold != 0 {
 		volume = config.RequestVolumeThreshold
@@ -88,7 +88,7 @@ func ConfigureCommand(name string, config CommandConfig) {
 	if config.ErrorPercentThreshold != 0 {
 		errorPercent = config.ErrorPercentThreshold
 	}
-
+	fmt.Printf("最大并发:%d\n", max)
 	circuitSettings[name] = &Settings{
 		Timeout:                time.Duration(timeout) * time.Millisecond,
 		MaxConcurrentRequests:  max,
