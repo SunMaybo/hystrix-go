@@ -88,7 +88,6 @@ func ConfigureCommand(name string, config CommandConfig) {
 	if config.ErrorPercentThreshold != 0 {
 		errorPercent = config.ErrorPercentThreshold
 	}
-	fmt.Printf("最大并发:%d\n", max)
 	circuitSettings[name] = &Settings{
 		Timeout:                time.Duration(timeout) * time.Millisecond,
 		MaxConcurrentRequests:  max,
