@@ -3,7 +3,6 @@ package hystrix
 import (
 	"sync"
 	"time"
-	"fmt"
 )
 
 var (
